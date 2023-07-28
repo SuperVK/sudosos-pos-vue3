@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import {
-  BannerResponse,
   PointOfSaleResponse,
   PointOfSaleWithContainersResponse,
   ProductResponse
 } from '@sudosos/sudosos-client';
 import apiService from '@/services/ApiService';
 import { fetchAllPages, useAuthStore } from "@sudosos/sudosos-frontend-common";
+import { setupAuthenticatedWebSocket } from "@/services/WebSocketClient";
 
 export const usePointOfSaleStore = defineStore('pointOfSale', {
   state: () => ({
@@ -34,6 +34,12 @@ export const usePointOfSaleStore = defineStore('pointOfSale', {
     async fetchPointOfSale(id: number): Promise<void> {
       const response = await apiService.pos.getSinglePointOfSale(id);
       this.pointOfSale = response.data;
+
+      if (!this.pointOfSale.useAuthentication) {
+        const authStore = useAuthStore();
+        if (authStore.getToken) setupAuthenticatedWebSocket(authStore.getToken);
+      }
+
     },
     async fetchUserPointOfSale(id: number): Promise<void> {
       this.usersPointOfSales = await fetchAllPages<PointOfSaleResponse>(0, 100,  (take, skip) =>

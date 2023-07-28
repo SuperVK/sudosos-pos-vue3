@@ -2,7 +2,8 @@
 
 import { defineStore } from 'pinia';
 import { BannerResponse } from '@sudosos/sudosos-client';
-import { fetchAllPages, ApiService } from '@sudosos/sudosos-frontend-common';
+import { ApiService } from '@sudosos/sudosos-frontend-common';
+import { fetchAllPages } from "@/helpers/PaginationHelper";
 
 const apiService = new ApiService(import.meta.env.VITE_LIVE_APP_API_BASE, () => '');
 

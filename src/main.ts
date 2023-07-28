@@ -16,10 +16,11 @@ import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import Panel from "primevue/panel";
 import Dialog from "primevue/dialog";
-import OverlayPanel from "primevue/OverlayPanel";
+import Dropdown from 'primevue/dropdown';
 
 import router from './router';
 import App from './App.vue';
+import setupWebSocketClient from "@/services/WebSocketClient";
 
 const app = createApp(App);
 
@@ -36,8 +37,10 @@ app.component('ProgressSpinner', ProgressSpinner);
 app.component('Dialog', Dialog);
 // eslint-disable-next-line vue/multi-word-component-names
 app.component('Panel', Panel);
-app.component('OverlayPanel', OverlayPanel);
+// eslint-disable-next-line vue/multi-word-component-names
+app.component('Dropdown', Dropdown);
 app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.use(createPinia());
+setupWebSocketClient();
 app.mount('#app');

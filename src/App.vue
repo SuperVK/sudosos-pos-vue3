@@ -1,7 +1,10 @@
 <template>
-  <RouterView />
-  <!--  <img class="image-overlay" src="@/assets/checkout.jpg" alt="Overlay Image" />-->
+  <div>
+    <WebSocketDisplayView/>
+    <RouterView />
+  </div>
 </template>
+
 
 <style scoped>
 .image-overlay {
@@ -22,3 +25,6 @@
   max-width: 100%;
 }
 </style>
+<script setup lang="ts">
+import WebSocketDisplayView from "@/views/WebSocketDisplayView.vue";
+</script>

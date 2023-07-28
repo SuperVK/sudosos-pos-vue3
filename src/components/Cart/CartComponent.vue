@@ -12,7 +12,7 @@
         <CartItemComponent :cart-product="item" />
       </div>
     </div>
-    <TransactionHistoryComponent v-else :transactions="transactions" />
+    <TransactionHistoryComponent v-if="showTransactions && showHistory" :transactions="transactions" />
     <div class="cart-info">
       <div class="total-info">
         <div class="total-label">Total</div>
@@ -23,20 +23,7 @@
         Your debit after purchase is €{{ formattedBalanceAfter }}
       </div>
     </div>
-    <div class="cart-actions">
-      <div class="buttons">
-        <button
-          class="checkout-button"
-          :class="{ countdown: checkingOut, empty: cartStore.cartTotalCount === 0 }"
-          @click="checkout"
-        >
-          {{ checkingOut ? duration : 'CHECKOUT' }}
-        </button>
-        <button class="clear-button" @click="logout">
-          <font-awesome-icon icon="fa-solid fa-xmark" />
-        </button>
-      </div>
-    </div>
+    <CartActionsComponent/>
   </div>
 </template>
 
@@ -52,6 +39,8 @@ import TransactionHistoryComponent from
     '@/components/Cart/TransactionHistory/TransactionHistoryComponent.vue';
 import { useAuthStore } from "@sudosos/sudosos-frontend-common";
 import { BaseTransactionResponse } from "@sudosos/sudosos-client";
+import { usePointOfSaleStore } from "@/stores/pos.store";
+import CartActionsComponent from "@/components/Cart/CartActionsComponent.vue";
 
 const cartStore = useCartStore();
 const authStore = useAuthStore();
@@ -62,6 +51,9 @@ const showHistory = ref(true);
 const balance = ref<number | null>(null);
 
 const transactions = ref<BaseTransactionResponse[]>([]);
+const showTransactions = computed(() => {
+  return usePointOfSaleStore().getPos?.useAuthentication;
+});
 
 if (cartStore.getBuyer) {
   // todo clean up
@@ -81,6 +73,7 @@ if (cartStore.getBuyer) {
         transactions.value.push(...res.data.records);
       });
 }
+
 const getBalance = async () => {
   if (!cartStore.buyer) return 0;
   try {
@@ -129,45 +122,6 @@ const formattedBalanceAfter = computed(() => {
   return formatPrice(price);
 });
 
-const duration = ref(3);
-const checkingOut = ref(false);
-let intervalId: number | undefined;
-const checkoutTimer = () =>
-  setInterval(async () => {
-    duration.value -= 1;
-    if (duration.value <= 0 && checkingOut.value) {
-      await finalizeCheckout();
-    }
-  }, 1000);
-
-const stopCheckout = () => {
-  duration.value = 3;
-  checkingOut.value = false;
-  clearInterval(intervalId);
-};
-const logout = async () => {
-  if (intervalId) stopCheckout();
-  await logoutService();
-};
-
-watch(cartItems, () => {
-  stopCheckout();
-});
-
-const finalizeCheckout = async () => {
-  stopCheckout();
-  await cartStore.checkout();
-  checkingOut.value = false;
-  duration.value = 3;
-  // TODO only logout if not authenticated pos.
-  await logoutService();
-};
-const checkout = async () => {
-  if (cartStore.cartTotalCount === 0) return;
-  if (checkingOut.value) return stopCheckout();
-  checkingOut.value = true;
-  intervalId = checkoutTimer();
-};
 </script>
 
 <style scoped>
@@ -239,46 +193,5 @@ const checkout = async () => {
   overflow-y: auto;
   margin-bottom: 20px;
   margin-top: 20px;
-}
-
-.cart-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  margin-top: 25px;
-}
-
-.buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.clear-button {
-  background-color: red;
-  color: white;
-  font-size: 50px;
-  height: 75px;
-  width: 75px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.checkout-button {
-  background-color: #0055fd;
-  font-weight: 500;
-  color: white;
-  width: 262px;
-  font-size: 27px;
-  border: none;
-  border-radius: 50px;
-  margin-right: 10px;
-  padding: 15px 55px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &.countdown {
-    background-color: green;
-  }
 }
 </style>
