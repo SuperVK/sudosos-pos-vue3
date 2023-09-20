@@ -13,7 +13,10 @@
       </div>
     </div>
     <div class="flex-column gap-sm-3">
-      <UserSearchRowComponent v-for="user in sortedUsers" :user="user" :key="user.id" @click="selectUser(user)"/>
+      <ScrollPanel style="width: 100%; height: 20rem;">
+        <UserSearchRowComponent v-for="user in sortedUsers" :user="user" :key="user.id"
+                                @click="selectUser(user)"/>
+      </ScrollPanel>
     </div>
   </div>
 </template>
@@ -29,6 +32,7 @@ import { useAuthStore } from "@sudosos/sudosos-frontend-common";
 import { debounce } from 'lodash';
 import type { AxiosResponse } from 'axios';
 import { useSettingStore } from "@/stores/settings.store";
+import ScrollPanel from "primevue/scrollpanel";
 
 const searchQuery = ref<string>('');
 
@@ -73,7 +77,7 @@ const sortedUsers = computed(() => {
   const sortedOnId = filteredUsers.sort((a, b) => b.id - a.id);
   const validUsers = sortedOnId.filter(user => user.active && user.acceptedToS !== "NOT_ACCEPTED");
   const invalidUsers = sortedOnId.filter(user => !user.active || user.acceptedToS === "NOT_ACCEPTED");
-  return [...validUsers, ...invalidUsers].slice(0, 10);
+  return [...validUsers, ...invalidUsers];
 });
 
 const searchInput = ref<null | HTMLInputElement>(null);

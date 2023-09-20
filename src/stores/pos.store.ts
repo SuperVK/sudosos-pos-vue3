@@ -51,7 +51,7 @@ export const usePointOfSaleStore = defineStore('pointOfSale', {
     },
     async fetchUserPointOfSale(id: number): Promise<void> {
       this.usersPointOfSales = await fetchAllPages<PointOfSaleResponse>(0, 100,  (take, skip) =>
-          // @ts-ignore
+        // @ts-ignore
           apiService.user.getUsersPointsOfSale(id, take, skip)
       );
     },

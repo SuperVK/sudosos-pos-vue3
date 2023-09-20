@@ -21,6 +21,7 @@ import Dropdown from "primevue/dropdown";
 
 import router from './router';
 import App from './App.vue';
+import ScrollPanel from "primevue/scrollpanel";
 
 const app = createApp(App);
 
@@ -41,6 +42,6 @@ app.component('OverlayPanel', OverlayPanel);
 // eslint-disable-next-line
 app.component('Dropdown', Dropdown);
 app.component('font-awesome-icon', FontAwesomeIcon);
-
+app.component('ScrollPanel', ScrollPanel);
 app.use(createPinia());
 app.mount('#app');
